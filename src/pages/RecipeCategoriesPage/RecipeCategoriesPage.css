@@ -1,0 +1,104 @@
+/* header {
+  min-height: 100vh;
+} */
+.header-image {
+  /* margin-top: -100px; */
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  filter: brightness(0.75);
+}
+
+header {
+  position: relative;
+}
+
+section {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  min-width: 50vw;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+}
+
+@media screen and (max-width: 760px) {
+  section {
+    min-width: 80vw;
+  }
+  section > h1 {
+    font-size: 4rem !important;
+    line-height: 3.5rem;
+  }
+}
+
+.header-carousel {
+  position: absolute;
+  top: 75%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
+.header-carousel-image {
+  margin-top: 0px;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.header-image-card {
+  width: 200px;
+  height: 400px;
+}
+@media screen and (max-width: 1400px) {
+  .header-carousel-image-card {
+    width: 100%;
+    height: 200px;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .header-carousel-image-card {
+    width: 100%;
+    height: 200px;
+  }
+
+  .header-carousel {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  section {
+    min-width: 80vw;
+  }
+  section > h1 {
+    font-size: 4rem !important;
+    line-height: 3.5rem;
+  }
+  .header-carousel-image-card {
+    width: 100%;
+    height: 150px;
+  }
+  .header-carousel {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+  }
+}
+
+header .carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3E%3Cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3E%3C/svg%3E");
+}
+
+header .carousel-control-next-icon {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3E%3Cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+}

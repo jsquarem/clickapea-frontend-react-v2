@@ -1,0 +1,125 @@
+variables:
+  NPM_TOKEN: ${GITLAB_TOKEN}
+  GITLAB_PROJECT_ID: ${CI_PROJECT_ID}
+  VERCEL_USER: ${VERCEL_USER}
+  VERCEL_ORG_ID: ${VERCEL_ORG_ID}
+  VERCEL_PROJECT_ID: ${VERCEL_PROJECT_ID}
+  DOMAIN: clickapea.com
+  CODE_QUALITY_DISABLED: "true"
+
+include:
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+
+stages:
+  - dependencies
+  - test
+  - release
+
+.node:
+  variables:
+    IMAGE: node:16
+  image: $IMAGE
+
+.node_cache:
+  extends: .node
+  cache:
+    key: $CI_PROJECT_DIR-$CI_COMMIT_REF_SLUG
+    paths:
+      - node_modules/
+    policy: pull
+
+Dependencies:
+  extends: .node
+  stage: dependencies
+  cache:
+    key: $CI_PROJECT_DIR-$CI_COMMIT_REF_SLUG
+    paths:
+      - node_modules/
+  script:
+    - npm ci
+  rules:
+    - if: '$CI_MERGE_REQUEST_ID == null'
+      changes:
+        - package-lock.json
+
+Node Lint:
+  stage: test
+  extends: .node_cache
+  script:
+    - npm run lint
+  rules:
+    - if: $CI_MERGE_REQUEST_ID == null
+      exists:
+      - .eslintrc.js
+  allow_failure: true
+
+Node Audit:
+  stage: test
+  extends: .node_cache
+  script:
+    - npm run audit
+  rules:
+    - if: $CI_MERGE_REQUEST_ID == null
+      exists:
+      - package.json
+
+Node Coverage:
+  stage: test
+  extends: .node_cache
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  script:
+    - npm run coverage
+  artifacts:
+    reports:
+      junit: junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+    paths:
+      - coverage/
+  rules:
+    - if: $CI_MERGE_REQUEST_ID == null
+      exists:
+      - jest.config.js
+  allow_failure: true
+
+.vercel:
+  extends: .node_cache
+  variables:
+    PREVIEW_URL: ${DOMAIN}
+  environment:
+    name: vercel/$CI_COMMIT_REF_NAME
+    url: https://$PREVIEW_URL
+  before_script:
+    - npm i -g vercel
+    - vercel pull --yes --environment=${VERCEL_ENV_NAME} --token=$VERCEL_TOKEN
+  script:
+    - DEPLOYMENT_URL=$(VERCEL_ORG_ID=$VERCEL_ORG_ID VERCEL_PROJECT_ID=$VERCEL_PROJECT_ID vercel --confirm -t $VERCEL_TOKEN --scope $VERCEL_USER)
+    - vercel alias set $DEPLOYMENT_URL $PREVIEW_URL -t $VERCEL_TOKEN --scope $VERCEL_USER
+
+vercel-dev:
+  stage: release
+  environment:
+    name: dev
+  variables:
+    PREVIEW_URL: web.$CI_ENVIRONMENT_NAME.${DOMAIN}
+    VERCEL_ENV_NAME: preview
+  extends: .vercel
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: never
+    - if: $CI_MERGE_REQUEST_ID == null
+
+vercel-prod:
+  stage: release
+  environment:
+    name: prod
+  variables:
+    VERCEL_ENV_NAME: production
+  extends: .vercel
+  script:
+    - vercel build --prod --token=$VERCEL_TOKEN
+    - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
