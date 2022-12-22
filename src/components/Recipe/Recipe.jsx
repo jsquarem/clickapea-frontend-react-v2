@@ -165,9 +165,9 @@ export default function Recipe({
             </div>
           </div>
         </div>
-        {/* <div className="equipment-list bg-white bordered rounded mt-3 py-3">
+        <div className="equipment-list bg-white bordered rounded mt-3 py-3">
           <EquipmentList equipmentList={recipeObject.recipe.equipment} />
-        </div> */}
+        </div>
       </div>
       <div className="row pb-5 mb-5">
         <RecipeInstructions
