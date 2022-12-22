@@ -19,6 +19,7 @@ import ShoppingListPage from '../ShoppingListPage/ShoppingListPage';
 import RecipeLoading from '../../components/RecipeLoading/RecipeLoading';
 import PageNotFound from '../PageNotFound/PageNotFound';
 import ProfilePage from '../ProfilePage/ProfilePage';
+import SearchResultsPage from '../SearchResultsPage/SearchResultsPage';
 import { Helmet } from 'react-helmet';
 import { MdSupervisedUserCircle } from 'react-icons/md';
 
@@ -58,6 +59,7 @@ export default function App() {
       <Router>
         <Nav user={user} handleLogout={handleLogout} />
         <Routes>
+          <Route path="/database/98789" element={<SearchResultsPage />} />
           <Route exact path="/" element={<HomePage user={user} />} />
           <Route path="/planner" element={<PlannerPage user={user} />} />
           <Route path="/list" element={<ShoppingListPage user={user} />} />
